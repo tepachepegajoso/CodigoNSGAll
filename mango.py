@@ -7,7 +7,7 @@ import math
 from matplotlib.animation import FuncAnimation
 
 #----------Variables Globales-----------
-
+print("Hola")
 n_poblacion = 50
 n_generacion = 600
 tasaMutacion = 0.05
@@ -489,3 +489,6 @@ def main():
     plt.show()
     """
 main()
+
+
+#Comentario
