@@ -1,4 +1,4 @@
-import numpy as np
+https://github.com/tepachepegajoso/CodigoNSGAll.gitimport numpy as np
 import matplotlib.pyplot as plt
 import functools
 import random
@@ -406,8 +406,7 @@ def DTLZ5(x):
             
         fi = (1 + gx) * xi #fm(x)
 
-        funciones.append(fi)
-    
+        funciones.append(fi)    
     
     return np.stack(funciones, axis=1)
     
@@ -418,7 +417,7 @@ def DTLZ6(x):
 
     gx = np.sum(np.power(x[:, m:],0.1), axis=1)
     
-    for f in range(m): #M numero de funciones
+    for f in range(m): #M nuero de funciones
         if(f == m-1):
             xi = (np.sin(omega(gx,x[:,0]) * (np.pi)/2)) #( sen(x1) pi/2 )
         else:
@@ -492,3 +491,5 @@ main()
 
 
 #Comentario
+#MANGO 
+
