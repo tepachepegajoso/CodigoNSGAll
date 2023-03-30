@@ -6,6 +6,7 @@ import collections
 import math
 from matplotlib.animation import FuncAnimation
 
+# COmentario ISRA
 #----------Variables Globales-----------
 print("Hola")
 n_poblacion = 50
