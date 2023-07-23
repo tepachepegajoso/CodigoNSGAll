@@ -317,6 +317,7 @@ def mutacion(individuo, tasa_m):
         indice_aleatorio = random.randint(4, 7)
     
     print(indice_aleatorio)
+    # de acuerdo al ruido gaussiano se obtiene un indice del 0 al 7, este indice corresponde al valor de un parametro de OLSR que sera modificado de acuerdo a su rango de operacion
     if indice_aleatorio == 0:
         numeros[indice_aleatorio] = random.uniform(2.0, 15.0)
     elif indice_aleatorio == 1:
@@ -337,6 +338,16 @@ def mutacion(individuo, tasa_m):
     return numeros
 
 def population(p_t):
+    """
+    Genera una población aleatoria de individuos con las caracteristicas de una configuracion de OLSR, asignando a cada gen su porpio rango de valores.
+
+    Argumentos:
+    p_t (int): Cantidad de sublistas a generar.
+
+    Retorna:
+    numpy.array: Un array 2D que contiene sublistas con valores aleatorios.
+    """
+    # Rangos para los valores aleatorios de cada sublista
     ranges = [(2.0, 15.0),
           (5.0, 15.0),
           (4.0, 35.0),
@@ -347,7 +358,7 @@ def population(p_t):
           (10.5, 90.0)]
 
     result = []
-    for _ in range(p_t*2):  # Generate 10 lists
+    for _ in range(p_t*2):  
         sublist = []
         for i, rng in enumerate(ranges):
             if i == 3:
@@ -405,11 +416,21 @@ def NSGA_II(p_t, valores, g):
     return poblacion_sig
 
 def watermelon(x):
-    resultado_metricas = []
+    """
+    Ejecuta pruebas y calcula métricas a partir de diferentes configuraciones de OLSR.
+
+    Argumentos:
+    x (list): Lista de casos de prueba con configuraciones.
+
+    Retorna:
+    numpy.array: Un array 2D que contiene las métricas calculadas para cada caso de prueba.
+    """
+    resultado_metricas = [] # Lista para almacenar los resultados de las métricas
+
     for test_case in x: 
-
+        # Desempaqueta los valores de prueba de OLSR.h en la carpeta del simulador ns2
         OLSR_HELLO_INTERVAL, OLSR_MID_INTERVAL, OLSR_TC_INTERVAL, OLSR_WILL_DEFAULT, OLSR_NEIGHB_HOLD_TIME, OLSR_MID_HOLD_TIME, OLSR_TOP_HOLD_TIME, OLSR_DUP_HOLD_TIME = test_case
-
+        # Crea un diccionario para asignar los nuevos valores
         nuevos_valores = {
             'OLSR_HELLO_INTERVAL': OLSR_HELLO_INTERVAL,
             'OLSR_MID_INTERVAL': OLSR_MID_INTERVAL,
@@ -421,7 +442,7 @@ def watermelon(x):
             'OLSR_DUP_HOLD_TIME': OLSR_DUP_HOLD_TIME
         }
         try:
-
+            # Modifica el archivo de entrada con los nuevos valores
             with fileinput.FileInput(archivo_tcl, inplace=True) as archivo:
                 for linea in archivo:
                     for parametro, nuevo_valor in nuevos_valores.items():
@@ -434,20 +455,20 @@ def watermelon(x):
 
         print('call ns2')
         print('Beelzebub has a devil put aside for me...')
-        output = subprocess.check_output(command)
-
+        output = subprocess.check_output(command) # Ejecuta un comando en el sistema
+        # Calcula métricas a partir del archivo de traza
         pdr = tracetest.calculate_pdr(trace_file)
         nrl = tracetest.calculate_nrl(trace_file)
         e2ed = tracetest.calculate_e2ed(trace_file)
         a = [pdr, nrl, e2ed]
-        resultado_metricas.append(a)
-        resultado_metricas_aux = np.array(resultado_metricas)
+        resultado_metricas.append(a) # Agrega las métricas calculadas a la lista
+        resultado_metricas_aux = np.array(resultado_metricas) # Convierte la lista de métricas en un array numpy
         objective_1 = 1-resultado_metricas_aux[:, 0]
         objective_2 = 1-resultado_metricas_aux[:, 1]
         objective_3 = resultado_metricas_aux[:, 2]
 
-    evaluation = np.stack([objective_1, objective_2, objective_3], axis=1)
-    return evaluation
+    evaluation = np.stack([objective_1, objective_2, objective_3], axis=1) # Combina las métricas en un array 2D
+    return evaluation # Retorna el array con las métricas calculadas
 
 def main():
     """
@@ -462,6 +483,7 @@ def main():
     # ax = plt.axes(projection="3d")
     # ax.view_init(45, 45)
 
+    #Genracion de los ciclos de ejecucion del entorno
     for generation in range(n_generacion):
         pt = watermelon(x)
         x = NSGA_II(x, pt, generation)
