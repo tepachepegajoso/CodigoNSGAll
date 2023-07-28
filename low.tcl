@@ -1,5 +1,5 @@
 # ======================================================================
-# Definir las opciones del hardware y los nodos
+# Definir las opciones del hardware y los nodos para 20 vehiculos
 # ======================================================================
 set val(chan)           Channel/WirelessChannel    ;# channel type
 set val(prop)           Propagation/Nakagami       ;# radio-propagation
