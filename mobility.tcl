@@ -1,3 +1,4 @@
+#usar 20, 30 y 40 nodos
 $node_(0) set X_ 845.14
 $node_(0) set Y_ 377.98
 $node_(0) set Z_ 0
