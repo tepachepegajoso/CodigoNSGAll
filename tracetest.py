@@ -1,3 +1,7 @@
+"""
+Esta es la version de prueba del analizador de trazas
+
+"""
 def calculate_pdr(trace_file):
 	with open(trace_file, 'r') as file:
 		lines=file.readlines()
