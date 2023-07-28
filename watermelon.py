@@ -33,7 +33,7 @@ command = [ns2_exec, ns2_script]
 #     plt.pause(0.001)
 #     plt.draw()
 #     plt.cla()
-    
+
 # def graficar(pt, ax):
 #     """
 #     Grafica los puntos en 3D.
@@ -53,7 +53,7 @@ command = [ns2_exec, ns2_script]
 #     plt.pause(0.001)
 #     plt.draw()
 #     plt.cla()
-    
+
 def dominancia(a, b):
     """
     Verifica si el punto 'a' domina al punto 'b' en términos de pareto.
@@ -65,15 +65,15 @@ def dominancia(a, b):
     Returns:
         bool: True si el punto 'a' domina a 'b', False de lo contrario.
     """
-    
+
     #Se define la primer condicion de acuerdo a la dominancia de Pareto
-    #Donde cada elemento de 'a' en menor o igual a cada elemnto de 'b' 
+    #Donde cada elemento de 'a' en menor o igual a cada elemnto de 'b'
     condicion_1 = a <= b
-    
-    #Se define la segunda condicion 
+
+    #Se define la segunda condicion
     #Donde algun elemento de a debe ser extrictamente menos a los elementos de b
     condicion_2 = a < b
-    
+
     #Evaluaremos las condiciones, en caso de que se cumplas retornaremos True
     #En caso contrario retornaremos False
     if np.all(condicion_1) and np.any(condicion_2):
@@ -92,19 +92,19 @@ def matriz_dominancia(datos):
     """
     p_t = datos.shape[0]
     n = datos.shape[1]
-    
+
     x = np.zeros([p_t, p_t, n])
     y = np.zeros([p_t, p_t, n])
-    
+
     for i in range(p_t):
         x[i,:,:] = datos[i]
         y[:,i,:] = datos[i]
-    
+
     condicion_1 = x <= y
     condicion_2 = x < y
-    
-    return np.logical_and(np.all(condicion_1, axis=2), np.any(condicion_2, axis=2))  
-       
+
+    return np.logical_and(np.all(condicion_1, axis=2), np.any(condicion_2, axis=2))
+
 def frentes_pareto(datos):
     """
     Calcula los frentes de Pareto para un conjunto de datos.
@@ -115,17 +115,17 @@ def frentes_pareto(datos):
     Returns:
         List[numpy.ndarray]: Lista de arreglos con los índices de los puntos en cada frente de Pareto.
     """
-    
+
     # Creamos una lista vacía para ir guardando los conjuntos de dominancia de cada punto
     conjunto_d = []
     # Creamos una lista vacía para ir contando cuántos puntos dominan a cada uno
     cuenta = []
-    
+
     # Calculamos la matriz de dominancia para los datos de entrada
     matriz = matriz_dominancia(datos)
     # Obtenemos el número de puntos
     pop_size = datos.shape[0]
-    
+
     # Recorremos todos los puntos y calculamos su conjunto de dominancia y el número de puntos que domina
     for i in range(pop_size):
         dominante_actual = set()
@@ -135,14 +135,14 @@ def frentes_pareto(datos):
                 dominante_actual.add(j)
             elif matriz[j,i]:
                 cuenta[-1] += 1
-                
+
         conjunto_d.append(dominante_actual)
 
     # Convertimos la lista de cuentas a un arreglo de numpy para poder realizar operaciones matemáticas con él
     cuenta = np.array(cuenta)
     # Creamos una lista vacía para ir guardando los frentes de Pareto
     frentes = []
-    
+
     # Iteramos hasta que no queden más puntos en los frentes de Pareto
     while True:
         # Buscamos los puntos que no son dominados por ningún otro
@@ -150,18 +150,18 @@ def frentes_pareto(datos):
         # Si no hay puntos que no sean dominados, salimos del loop
         if len(frente_actual) == 0:
             break
-        
+
         # Añadimos los puntos del frente actual a la lista de frentes de Pareto
         frentes.append(frente_actual)
 
         # Marcamos los puntos del frente actual como dominados (-1 en la lista de cuentas)
         for individual in frente_actual:
-            cuenta[individual] = -1 
+            cuenta[individual] = -1
             # Recorremos los puntos que dominaba el punto actual y reducimos su cuenta en 1
             dominado_actual_c = conjunto_d[individual]
             for dominado_aux in dominado_actual_c:
                 cuenta[dominado_aux] -= 1
-            
+
     return frentes
 
 def crowding(datos, fronts):
@@ -211,8 +211,8 @@ def rank(fronts):
     - fronts (list): Una lista de listas de índices de individuos que pertenecen a cada frente de Pareto.
 
     Returns:
-    - rank_indice (dict): Un diccionario que contiene el índice de rango para cada individuo. 
-    El índice de rango es un número entero que indica el nivel del frente de Pareto al que pertenece el individuo 
+    - rank_indice (dict): Un diccionario que contiene el índice de rango para cada individuo.
+    El índice de rango es un número entero que indica el nivel del frente de Pareto al que pertenece el individuo
     (los individuos en el primer frente tienen un índice de rango de 0, los del segundo frente tienen un índice de rango de 1, etc.).
     """
 
@@ -222,7 +222,7 @@ def rank(fronts):
             rank_indice[x] = i
 
     return rank_indice
-        
+
 def ordenamiento_no_dominado(rank_indice, crowding):
     """
     Función que realiza el ordenamiento no dominado de un conjunto de soluciones utilizando el método de crowding distance.
@@ -256,11 +256,11 @@ def ordenamiento_no_dominado(rank_indice, crowding):
 def seleccion(individuos, q_t):
     """
     Selecciona q_t individuos de manera aleatoria de una población de tamaño 'individuos'.
-    
+
     Args:
     - individuos (int): tamaño de la población.
     - q_t (int): cantidad de individuos a seleccionar.
-    
+
     Returns:
     - elegidos (List[int]): lista de índices de los individuos seleccionados.
     """
@@ -269,7 +269,7 @@ def seleccion(individuos, q_t):
         index = np.random.randint(0,individuos)  # Escoge un índice aleatorio entre 0 e individuos (no inclusive)
         padre = index  # Elige el índice como el padre
         elegidos.append(padre)  # Agrega el índice del padre a la lista de seleccionados
-    
+
     return elegidos  # Retorna la lista de índices seleccionados
 
 def cruza(individuos, tasa):
@@ -291,7 +291,7 @@ def cruza(individuos, tasa):
         descendencia[2*i, 0:punto_cruza] = individuos[x, 0:punto_cruza]  # se crea el hijo 1 con la primera parte del primer padre y la segunda del segundo padre
         descendencia[2*i, punto_cruza:] = individuos[y, punto_cruza:]
         descendencia[2*i+1, 0:punto_cruza] = individuos[y, 0:punto_cruza]  # se crea el hijo 2 con la primera parte del segundo padre y la segunda del primer padre
-        descendencia[2*i+1, punto_cruza:] = individuos[x, punto_cruza:] 
+        descendencia[2*i+1, punto_cruza:] = individuos[x, punto_cruza:]
     return descendencia
 
 def mutacion(individuo, tasa_m):
@@ -315,7 +315,7 @@ def mutacion(individuo, tasa_m):
         indice_aleatorio = random.randint(0, 3)
     else:
         indice_aleatorio = random.randint(4, 7)
-    
+
     print(indice_aleatorio)
     # de acuerdo al ruido gaussiano se obtiene un indice del 0 al 7, este indice corresponde al valor de un parametro de OLSR que sera modificado de acuerdo a su rango de operacion
     if indice_aleatorio == 0:
@@ -358,7 +358,7 @@ def population(p_t):
           (10.5, 90.0)]
 
     result = []
-    for _ in range(p_t*2):  
+    for _ in range(p_t*2):
         sublist = []
         for i, rng in enumerate(ranges):
             if i == 3:
@@ -384,34 +384,34 @@ def NSGA_II(p_t, valores, g):
 
     # Imprimimos información de la generación actual
     print(f"NSGA-II en la generación {g+1}")
-    
+
     # Obtenemos los frentes de Pareto de la población actual
     fronts = frentes_pareto(valores)
-    
+
     # Obtenemos la posición de cada individuo en su frente
     posicion_ranking = rank(fronts)
-    
+
     # Calculamos la distancia de crowding de cada individuo
     crowding_d = crowding(valores, fronts)
-    
+
     # Ordenamos los individuos por el ranking y la distancia de crowding
     indices_nd = ordenamiento_no_dominado(posicion_ranking, crowding_d)
-    
+
     # Seleccionamos la porción de mejores sobrevivientes para la siguiente generación
     sobrevivientes = p_t[indices_nd[:n_poblacion]]
-    
+
     # Seleccionamos los padres para la cruza
     seleccionados = seleccion(individuos=n_poblacion, q_t=n_poblacion)
-    
+
     # Realizamos la cruza con los padres seleccionados
     cruza_t = cruza(seleccionados, tasa=tasa_cruza)
-    
+
     # Realizamos la mutación a partir de los sobrevivientes obtenidos
     pt_next = np.array([mutacion(sobrevivientes[i], tasa_mutacion) for i in cruza_t])
-    
+
     # Combinamos los sobrevivientes y los hijos mutados para formar la siguiente generación
     poblacion_sig = np.concatenate([sobrevivientes, pt_next])
-    
+
     # Retornamos la población de la siguiente generación
     return poblacion_sig
 
@@ -427,7 +427,7 @@ def watermelon(x):
     """
     resultado_metricas = [] # Lista para almacenar los resultados de las métricas
 
-    for test_case in x: 
+    for test_case in x:
         # Desempaqueta los valores de prueba de OLSR.h en la carpeta del simulador ns2
         OLSR_HELLO_INTERVAL, OLSR_MID_INTERVAL, OLSR_TC_INTERVAL, OLSR_WILL_DEFAULT, OLSR_NEIGHB_HOLD_TIME, OLSR_MID_HOLD_TIME, OLSR_TOP_HOLD_TIME, OLSR_DUP_HOLD_TIME = test_case
         # Crea un diccionario para asignar los nuevos valores
